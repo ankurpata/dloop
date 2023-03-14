@@ -10,10 +10,10 @@ const URL_TO_SCRAPE = `https://www.houzae.com/ae/rent`;
 
 
 //Returns all urls of depth upto 3 using queue
-const scrapper = async (targetUrl, depth) => {
+const scrapper = async (targetUrl, depth, maxDepth) => {
 
     //Return if depth is greater than 2
-    if (depth > 3) return;
+    if (depth > maxDepth) return;
     let $;
     try {
         //Get the page
@@ -59,7 +59,7 @@ const scrapper = async (targetUrl, depth) => {
     //Recursively call the function for all links
     console.log(links, 'all links', depth);
     for (const i in links) {
-        await scrapper(links[i], depth + 1);
+        await scrapper(links[i], depth + 1, maxDepth);
     }
 }
 
@@ -68,7 +68,10 @@ const scrapper = async (targetUrl, depth) => {
 const data = [];
 
 (async function () {
-    await scrapper(URL_TO_SCRAPE, 0);
+    const urlArg = process.argv[2];
+    const depthArg = process.argv[3];
+    console.log(urlArg, depthArg, 'urlArg, depthArg');
+    await scrapper((urlArg || URL_TO_SCRAPE), 0, depthArg || 3) // 3 is the max default depth
     console.log('Done');
 })();
 
