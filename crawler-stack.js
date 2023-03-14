@@ -10,11 +10,13 @@ const URL_TO_SCRAPE = `https://www.wikipedia.org/`;
 
 
 //Returns all urls of depth upto 3 using queue
-const scrapper = async (targetUrl, depth) => {
+const scrapper = async (targetUrl, depth, depthArg) => {
 
     console.log('scrapper called', targetUrl, depth);
-    //Return if depth is greater than 2
-    if (depth > 3) return;
+
+    //Return if depth is greater than depthArg
+    if (depth > depthArg) return;
+
     let $;
     try {
         //Get the page
@@ -65,15 +67,18 @@ const visitedUrls = {};
 
 (async function () {
 
-    urlStack.push({ url: URL_TO_SCRAPE, depth: 0 });
+    const urlArg = process.argv[2];
+    const depthArg = process.argv[3] || 3;
+
+    urlStack.push({ url: (urlArg || URL_TO_SCRAPE), depth: 0 });
 
     while (urlStack.length > 0) {
         const { url, depth } = urlStack.pop();
 
         if (visitedUrls[url]) continue;
-        await scrapper(url, depth);
+        await scrapper(url, depth, depthArg);
         visitedUrls[url] = true;
-        
+
         console.log('Total Stack size : ', urlStack.length);
         console.log('Total URLS scanned : ', Object.keys(visitedUrls).length);
     }
